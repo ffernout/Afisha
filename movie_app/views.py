@@ -1,9 +1,9 @@
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
-from rest_framework import status
+from rest_framework import status, viewsets
 from django.shortcuts import get_object_or_404
 from .models import Movie, Director, Review
-from .serializers import MovieSerializer, DirectorSerializer, ReviewSerializer
+from .serializers import MovieSerializer, DirectorSerializer, ReviewSerializer, ReviewDetailSerializer, DirectorDetailSerializer
 
 
 @api_view(['GET', 'POST'])
@@ -178,3 +178,34 @@ def review_detail_view(request, id):
     elif request.method == 'DELETE':
         review.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class DirectorViewSet(viewsets.ModelViewSet):
+    queryset = Director.objects.all()
+
+    def get_serializer_class(self):
+        if self.action == 'retrieve':
+            return DirectorDetailSerializer
+        return DirectorSerializer
+
+
+class MovieDetailSerializer:
+    pass
+
+
+class MovieViewSet(viewsets.ModelViewSet):
+    queryset = Movie.objects.all()
+
+    def get_serializer_class(self):
+        if self.action == 'retrieve':
+            return MovieDetailSerializer
+        return MovieSerializer
+
+
+class ReviewViewSet(viewsets.ModelViewSet):
+    queryset = Review.objects.all()
+
+    def get_serializer_class(self):
+        if self.action == 'retrieve':
+            return ReviewDetailSerializer
+        return ReviewSerializer
