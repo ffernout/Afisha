@@ -1,3 +1,4 @@
+from django.contrib.auth.models import AbstractUser
 from django.db import models
 
 class Director(models.Model):
@@ -21,3 +22,10 @@ class Review(models.Model):
 
     def __str__(self):
         return f"Review for {self.movie.title}"
+
+
+class CustomUser(AbstractUser):
+    is_active = models.BooleanField(default=False)
+    confirmation_code = models.CharField(max_length=6, blank=True, null=True)
+
+

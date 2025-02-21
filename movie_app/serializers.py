@@ -1,3 +1,7 @@
+from random import randint
+
+from django.contrib.auth import get_user_model
+from django.contrib.auth.hashers import make_password
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
@@ -149,3 +153,31 @@ class ReviewDetailSerializer(serializers.ModelSerializer):
             raise ValidationError("Review with this ID does not exist.")
 
         return attrs
+
+
+class RegisterSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = get_user_model()
+        fields = ['username', 'email', 'password']
+
+    def create(self, validated_data):
+        confirmation_code = str(randint(100000, 999999))
+        user = get_user_model().objects.create(
+            username=validated_data['username'],
+            email=validated_data['email'],
+            password=make_password(validated_data['password']),
+            confirmation_code=confirmation_code
+        )
+        print(f"Verification code sent: {confirmation_code} на email {user.email}")
+
+        return user
+
+
+class ConfirmSerializer(serializers.Serializer):
+    username = serializers.CharField()
+    confirmation_code = serializers.CharField()
+
+
+class LoginSerializer(serializers.Serializer):
+    username = serializers.CharField()
+    password = serializers.CharField()
